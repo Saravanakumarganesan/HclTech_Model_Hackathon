@@ -1,16 +1,12 @@
 package pages;
 
-import java.time.Duration;
-import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
+import java.time.Duration;
 
 public class RegisterPage {
-
     public WebDriver driver;
     public WebDriverWait wait;
 
@@ -19,174 +15,85 @@ public class RegisterPage {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    By email = By.id("userEmail");
+    By registerLink = By.className("btn1");
+    By firstName = By.id("firstName");
+    By lastName = By.id("lastName");
+    By userEmail = By.id("userEmail");
+    By userMobile = By.id("userMobile");
+    By occupation = By.className("custom-select");
+    By gender = By.xpath("//input[@value='Male']");
     By password = By.id("userPassword");
-    By loginBtn = By.id("login");
+    By confirmPassword = By.id("confirmPassword");
+    By ageCheckbox = By.xpath("//input[@type='checkbox']");
+    By registerButton = By.id("login");
+    By loginEmail = By.id("userEmail");
+    By loginPassword = By.id("userPassword");
+    By loginButton = By.id("login");
+    By errorMessage = By.cssSelector(".toast-error");
 
-    By errorMsg = By.cssSelector(".toast-error");
-
-    By productCards = By.cssSelector(".card-body");
-    By addToCartBtn = By.xpath("//button[contains(text(),'Add To Cart')]");
-
-    By cartBadge = By.cssSelector("[routerlink='/dashboard/cart'] label");
-
-    By cartBtn = By.cssSelector("[routerlink='/dashboard/cart']");
-
-    By cartProducts = By.cssSelector(".cartSection h3");
-
-    By deleteBtn = By.cssSelector(".btn-danger");
-
-    By totalPrice = By.cssSelector(".totalRow span");
-
-    By checkoutBtn = By.xpath("//button[contains(text(),'Checkout')]");
-
-    By placeOrderBtn = By.xpath("//a[contains(text(),'Place Order')]");
-
-    By country = By.xpath("//input[@placeholder='Select Country']");
-
-    By countryOption = By.xpath("//button[contains(@class,'ta-item')]");
-
-    By orderSuccess = By.cssSelector(".hero-primary");
-
-    By ordersBtn = By.cssSelector("[routerlink='/dashboard/myorders']");
-
-    By orderRows = By.cssSelector("tbody tr");
-
-    By orderId = By.cssSelector("tbody tr th");
-
-    public void openApplication() {
-        driver.get("https://rahulshettyacademy.com/client");
-        driver.manage().window().maximize();
+    public void CheckRegister() {
+        wait.until(ExpectedConditions.elementToBeClickable(registerLink)).click();
+        driver.findElement(firstName).sendKeys("Saro");
+        driver.findElement(lastName).sendKeys("Kumar");
+        driver.findElement(userEmail).sendKeys("saro@gmail.com");
+        driver.findElement(userMobile).sendKeys("9876538639");
+        WebElement dropdownElement = driver.findElement(occupation);
+        Select dropdown = new Select(dropdownElement);
+        dropdown.selectByVisibleText("Engineer");
+        driver.findElement(gender).click();
+        driver.findElement(password).sendKeys("Saro@1234");
+        driver.findElement(confirmPassword).sendKeys("Saro@1234");
+        driver.findElement(ageCheckbox).click();
+        driver.findElement(registerButton).click();
     }
 
-    public void login(String userEmail, String userPassword) {
-        driver.findElement(email).sendKeys(userEmail);
-        driver.findElement(password).sendKeys(userPassword);
-        driver.findElement(loginBtn).click();
+    public void CheckLogin() {
+        driver.findElement(loginEmail).sendKeys("saro5@gmail.com");
+        driver.findElement(loginPassword).sendKeys("Saro@1234");
+        driver.findElement(loginButton).click();
+    }
+    public void ErrorMessage() {
+        driver.findElement(loginEmail).sendKeys("saro5@gmail.com");
+        driver.findElement(loginPassword).sendKeys("WrongPassword");
+        driver.findElement(loginButton).click();
+        WebElement toast = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        System.out.println("Error Message: " + toast.getText());
     }
 
-    public String getLoginErrorMessage() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(errorMsg));
-        return driver.findElement(errorMsg).getText();
+    public void Logout(){
+        driver.findElement(By.className("btn")).click();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(registerLink));
     }
 
-    public int getProductCount() {
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(productCards));
-        return driver.findElements(productCards).size();
+    By Email = By.id("userEmail");
+    By Password = By.id("userPassword");
+    By LoginButton = By.id("login");
+
+    public void EmptyInfo() {
+
+        driver.findElement(LoginButton).click();
+        String userValidation = driver.findElement(Email).getAttribute("validationMessage");
+        String passValidation = driver.findElement(Password).getAttribute("validationMessage");
+        System.out.println(userValidation);
+        System.out.println(passValidation);
     }
 
-    public boolean verifyProductNameAndPrice() {
-        List<WebElement> products = driver.findElements(productCards);
-
-        for (WebElement product : products) {
-
-            String name = product.findElement(By.cssSelector("b")).getText();
-
-            String price = product.findElement(By.cssSelector(".text-muted")).getText();
-
-            if (name.isEmpty() || price.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+    public void DashBoard(){
+        driver.findElement(loginEmail).sendKeys("saro5@gmail.com");
+        driver.findElement(loginPassword).sendKeys("Saro@1234");
+        driver.findElement(loginButton).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("card-img-top")));
     }
 
-    public void addProductToCart(String productName) {
-
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(productCards));
-
-        List<WebElement> products = driver.findElements(productCards);
-
-        for (WebElement product : products) {
-
-            String name = product.findElement(By.cssSelector("b")).getText();
-
-            if (name.equalsIgnoreCase(productName)) {
-
-                product.findElement(By.xpath(".//button[contains(text(),'Add To Cart')]")).click();
-
-                break;
-            }
-        }
-    }
-
-    public String getCartBadgeCount() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(cartBadge));
-        return driver.findElement(cartBadge).getText();
-    }
-
-    public void goToCart() {
-        driver.findElement(cartBtn).click();
-    }
-
-    public boolean verifyProductInCart(String productName) {
-
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(cartProducts));
-
-        List<WebElement> products = driver.findElements(cartProducts);
-
-        for (WebElement product : products) {
-
-            if (product.getText().equalsIgnoreCase(productName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void deleteProductFromCart() {
-
-        wait.until(ExpectedConditions.elementToBeClickable(deleteBtn));
-        driver.findElement(deleteBtn).click();
-    }
-
-    public String getTotalPrice() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(totalPrice));
-        return driver.findElement(totalPrice).getText();
-    }
-
-    public void proceedToCheckout() {
-
-        driver.findElement(checkoutBtn).click();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(country));
-
-        driver.findElement(country).sendKeys("India");
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(countryOption));
-
-        driver.findElement(countryOption).click();
-
-        driver.findElement(placeOrderBtn).click();
-    }
-
-    public String getOrderSuccessMessage() {
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(orderSuccess));
-
-        return driver.findElement(orderSuccess).getText();
-    }
-
-    public void goToOrders() {
-        driver.findElement(ordersBtn).click();
-    }
-
-    public boolean verifyOrderHistory() {
-
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(orderRows));
-
-        return driver.findElements(orderRows).size() > 0;
-    }
-
-    public boolean verifyOrderIdDisplayed() {
-
-        return driver.findElement(orderId).isDisplayed();
-    }
-
-    public boolean validateEmptyLogin() {
-
-        driver.findElement(loginBtn).click();
-
-        return driver.findElement(email).getAttribute("validationMessage").length() > 0;
+    public void AddToCart() {
+        driver.findElement(loginEmail).sendKeys("saro5@gmail.com");
+        driver.findElement(loginPassword).sendKeys("Saro@1234");
+        driver.findElement(loginButton).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(By.className("w-10"))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.className("btn"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btn-primary")));
     }
 }
